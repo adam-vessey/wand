@@ -106,25 +106,25 @@ try:
 
     library.MagickClearException.argtypes = [ctypes.c_void_p]
 
-    library.MagickSetFilename.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
+    library.MagickSetFilename.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
 
     library.MagickReadImageBlob.argtypes = [ctypes.c_void_p, ctypes.c_void_p,
                                             ctypes.c_size_t]
 
-    library.MagickReadImage.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
+    library.MagickReadImage.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
 
     library.MagickReadImageFile.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
 
     library.MagickGetImageFormat.argtypes = [ctypes.c_void_p]
-    library.MagickGetImageFormat.restype = ctypes.c_wchar_p
+    library.MagickGetImageFormat.restype = ctypes.c_char_p
 
-    library.MagickSetImageFormat.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
+    library.MagickSetImageFormat.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
 
-    libmagick.MagickToMime.argtypes = [ctypes.c_wchar_p]
+    libmagick.MagickToMime.argtypes = [ctypes.c_char_p]
     libmagick.MagickToMime.restype = ctypes.POINTER(ctypes.c_char)
 
     library.MagickGetImageSignature.argtypes = [ctypes.c_void_p]
-    library.MagickGetImageSignature.restype = ctypes.c_wchar_p
+    library.MagickGetImageSignature.restype = ctypes.c_char_p
 
     library.MagickGetImageBackgroundColor.argtypes = [ctypes.c_void_p,
                                                       ctypes.c_void_p]
@@ -142,7 +142,7 @@ try:
                                            ctypes.POINTER(ctypes.c_size_t)]
     library.MagickGetImageBlob.restype = ctypes.POINTER(ctypes.c_ubyte)
 
-    library.MagickWriteImage.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
+    library.MagickWriteImage.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
 
     library.MagickWriteImageFile.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
 
@@ -277,7 +277,7 @@ else:
         libc = ctypes.cdll.LoadLibrary('libc.dylib')
     else:
         libc = ctypes.cdll.LoadLibrary('libc.so.6')
-    libc.fdopen.argtypes = [ctypes.c_int, ctypes.c_char_p]
+    libc.fdopen.argtypes = [ctypes.c_int, ctypes.c_wchar_p]
     libc.fdopen.restype = ctypes.c_void_p
 
 libc.free.argtypes = [ctypes.c_void_p]

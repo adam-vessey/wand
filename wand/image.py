@@ -350,8 +350,11 @@ class Image(Resource):
                  for b in args[:i] + args[i + 1:]):
             raise TypeError('parameters are exclusive each other; use only '
                             'one at once')
-        elif not (format is None or isinstance(format, str)):
-            raise TypeError('format must be a string, not ' + repr(format))
+        elif not (format is None or isinstance(format, bytes)):
+            if isinstance(format, str):
+              format = format.encode()
+            else:
+              raise TypeError('format must be a string (or bytes), not ' + repr(format))
         with self.allocate():
             if image is not None:
                 if not isinstance(image, Image):
@@ -366,8 +369,9 @@ class Image(Resource):
                 read = False
                 if file is not None:
                     if format:
+                        print("Format:", repr(format))
                         library.MagickSetFilename(self.wand,
-                                                  'buffer.' + format)
+                                                  b'buffer.' + format)
                     if (isinstance(file, io.IOBase) and
                         hasattr(libc, 'fdopen')):
                         fd = libc.fdopen(file.fileno(), file.mode)
@@ -382,23 +386,26 @@ class Image(Resource):
                         file = None
                 if blob is not None:
                     if format:
+                        print("Format:", repr(format))
                         library.MagickSetFilename(self.wand,
-                                                  'buffer.' + format)
+                                                  b'buffer.' + format)
                     if not isinstance(blob, collections.Iterable):
                         raise TypeError('blob must be iterable, not ' +
                                         repr(blob))
-                    if not isinstance(blob, str):
-                        blob = str(blob)
+                   
+                    if not isinstance(blob, bytes):
+                        blob = list([bytes(i) for i in blob])
                     library.MagickReadImageBlob(self.wand, blob, len(blob))
                     read = True
                 elif filename is not None:
                     if format:
+                        print("Format:", repr(format))
                         raise TypeError(
                             'format option cannot be used with image '
                             'nor filename'
                         )
-                    print("Filename:", filename)
-                    library.MagickReadImage(self.wand, filename)
+                    print("Filename:", repr(filename))
+                    library.MagickReadImage(self.wand, filename.encode())
                     read = True
                 if not read:
                     raise TypeError('invalid argument(s)')
@@ -494,7 +501,7 @@ class Image(Resource):
                         raise IndexError('y cannot be less than 0')
                     with iter(self) as iterator:
                         iterator.seek(y)
-                        return iterator.next(x)
+                        return iterator.__next__(x)
                 if not (x.step is None and y.step is None):
                     raise ValueError('slicing with step is unsupported')
                 elif (x.start is None and x.stop is None and
@@ -590,15 +597,18 @@ class Image(Resource):
         """
         fmt = library.MagickGetImageFormat(self.wand)
         if fmt:
-            return fmt
+            return fmt.decode()
         self.raise_exception()
 
     @format.setter
     def format(self, fmt):
-        if not isinstance(fmt, str):
-            raise TypeError("format must be a string like 'png' or 'jpeg'"
-                            ', not ' + repr(fmt))
-        r = library.MagickSetImageFormat(self.wand, fmt.strip().upper())
+        if not isinstance(fmt, bytes):
+            if isinstance(fmt, str):
+                fmt = fmt.strip().upper().encode()
+            else:
+                raise TypeError("format must be a (byte-)string like 'png' or 'jpeg'"
+                                ', not ' + repr(fmt))
+        r = library.MagickSetImageFormat(self.wand, fmt)
         if not r:
             raise ValueError(repr(fmt) + ' is unsupported format')
         
@@ -662,7 +672,7 @@ class Image(Resource):
         .. versionadded:: 0.1.7
 
         """
-        rp = libmagick.MagickToMime(self.format)
+        rp = libmagick.MagickToMime(self.format.encode())
         if not rp:
             self.raise_exception()
         mimetype = ctypes.string_at(rp)
@@ -672,7 +682,7 @@ class Image(Resource):
             #        *not* the right solution, but I currently can't
             #        understand why.
             libc.free(rp)
-        return mimetype
+        return mimetype.decode()
 
     @property
     def signature(self):
@@ -682,7 +692,7 @@ class Image(Resource):
         .. versionadded:: 0.1.9
 
         """
-        return library.MagickGetImageSignature(self.wand)
+        return library.MagickGetImageSignature(self.wand).decode()
 
     @property
     def alpha_channel(self):
@@ -1075,7 +1085,7 @@ class Image(Resource):
         elif file is not None and filename is not None:
             raise TypeError('expected only one argument; but two passed')
         elif file is not None:
-            if isinstance(file, types.FileType) and hasattr(libc, 'fdopen'):
+            if isinstance(file, io.IOBase) and hasattr(libc, 'fdopen'):
                 fd = libc.fdopen(file.fileno(), file.mode)
                 r = library.MagickWriteImageFile(self.wand, fd)
                 if not r:
@@ -1087,9 +1097,12 @@ class Image(Resource):
                                     repr(file))
                 file.write(self.make_blob())
         else:
-            if not isinstance(filename, str):
-                raise TypeError('filename must be a string, not ' +
-                                repr(filename))
+            if not isinstance(filename, bytes):
+                if isinstance(filename, str):
+                    filename = filename.encode()
+                else:
+                    raise TypeError('filename must be a string, not ' +
+                                    repr(filename))
             r = library.MagickWriteImage(self.wand, filename)
             if not r:
                 self.raise_exception()
@@ -1211,7 +1224,7 @@ class Iterator(Resource, collections.Iterator):
             if not library.PixelSetIteratorRow(self.resource, y - 1):
                 self.raise_exception()
 
-    def next(self, x=None):
+    def __next__(self, x=None):
         if self.cursor >= self.height:
             self.destroy()
             raise StopIteration()
