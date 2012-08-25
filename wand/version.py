@@ -57,7 +57,7 @@ if libmagick:
     #: .. versionadded:: 0.2.1
     MAGICK_VERSION_NUMBER = c_magick_version.value
 
-    _match = re.match(r'^ImageMagick\s+(\d+)\.(\d+)\.(\d+)(?:-(\d+))?',
+    _match = re.match(b'^ImageMagick\s+(\d+)\.(\d+)\.(\d+)(?:-(\d+))?',
                       MAGICK_VERSION)
     #: (:class:`tuple`) The version tuple e.g. ``(6, 7, 7, 6)`` of
     #: :const:`MAGICK_VERSION`.
@@ -78,7 +78,7 @@ if libmagick:
     #:
     #: .. versionadded:: 0.2.1
     MAGICK_RELEASE_DATE = datetime.date(
-        *map(int, MAGICK_RELEASE_DATE_STRING.split('-')))
+        *list(map(int, MAGICK_RELEASE_DATE_STRING.split(b'-'))))
 
     del c_magick_version, _match
 
@@ -87,5 +87,5 @@ del libmagick
 
 
 if __name__ == '__main__':
-    print VERSION
+    print(VERSION)
 

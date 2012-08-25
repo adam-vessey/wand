@@ -95,7 +95,7 @@ TYPE_MAP = {}
 
 
 for domain, description, bases, codes in DOMAIN_MAP:
-    for code, (base, suffix) in itertools.izip(codes, CODE_MAP):
+    for code, (base, suffix) in zip(codes, CODE_MAP):
         name = domain + suffix
         locals()[name] = TYPE_MAP[code] = type(name, (base,) + bases, {
             '__doc__': description,

@@ -70,6 +70,8 @@ class Color(Resource):
             string is not None and raw is not None):
             raise TypeError('expected one argument')
         elif raw is None:
+            if isinstance(string, str):
+              string = string.encode()
             pixel = library.NewPixelWand()
             library.PixelSetColor(pixel, string)
             raw = ctypes.create_string_buffer(
@@ -126,8 +128,8 @@ class Color(Resource):
         if not isinstance(other, Color):
             return False
         with self as this:
-            with other:
-                return self.c_equals(this.resource, other.resource)
+            with other as that:
+                return self.c_equals(this.resource, that.resource)
 
     def __ne__(self, other):
         return not (self == other)

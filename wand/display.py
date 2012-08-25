@@ -68,12 +68,12 @@ def display(image, server_name=':0'):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print>>sys.stderr, 'usage: python -m wand.display FILE'
+        print('usage: python -m wand.display FILE', file=sys.stderr)
         raise SystemExit
     path = sys.argv[1]
     try:
         with Image(filename=path) as image:
             display(image)
     except BlobError:
-        print>>sys.stderr, 'cannot read the file', path
+        print('cannot read the file', path, file=sys.stderr)
 

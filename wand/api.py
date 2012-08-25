@@ -102,29 +102,29 @@ try:
 
     library.MagickGetException.argtypes = [ctypes.c_void_p,
                                            ctypes.POINTER(ctypes.c_int)]
-    library.MagickGetException.restype = ctypes.c_char_p
+    library.MagickGetException.restype = ctypes.c_wchar_p
 
     library.MagickClearException.argtypes = [ctypes.c_void_p]
 
-    library.MagickSetFilename.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    library.MagickSetFilename.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
 
     library.MagickReadImageBlob.argtypes = [ctypes.c_void_p, ctypes.c_void_p,
                                             ctypes.c_size_t]
 
-    library.MagickReadImage.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    library.MagickReadImage.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
 
     library.MagickReadImageFile.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
 
     library.MagickGetImageFormat.argtypes = [ctypes.c_void_p]
-    library.MagickGetImageFormat.restype = ctypes.c_char_p
+    library.MagickGetImageFormat.restype = ctypes.c_wchar_p
 
-    library.MagickSetImageFormat.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    library.MagickSetImageFormat.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
 
-    libmagick.MagickToMime.argtypes = [ctypes.c_char_p]
+    libmagick.MagickToMime.argtypes = [ctypes.c_wchar_p]
     libmagick.MagickToMime.restype = ctypes.POINTER(ctypes.c_char)
 
     library.MagickGetImageSignature.argtypes = [ctypes.c_void_p]
-    library.MagickGetImageSignature.restype = ctypes.c_char_p
+    library.MagickGetImageSignature.restype = ctypes.c_wchar_p
 
     library.MagickGetImageBackgroundColor.argtypes = [ctypes.c_void_p,
                                                       ctypes.c_void_p]
@@ -142,7 +142,7 @@ try:
                                            ctypes.POINTER(ctypes.c_size_t)]
     library.MagickGetImageBlob.restype = ctypes.POINTER(ctypes.c_ubyte)
 
-    library.MagickWriteImage.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    library.MagickWriteImage.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
 
     library.MagickWriteImageFile.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
 
@@ -161,7 +161,7 @@ try:
                                         ctypes.c_size_t, ctypes.c_ssize_t,
                                         ctypes.c_ssize_t]
 
-    library.MagickResetImagePage.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    library.MagickResetImagePage.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
 
     library.MagickResizeImage.argtypes = [ctypes.c_void_p, ctypes.c_size_t,
                                           ctypes.c_size_t, ctypes.c_int,
@@ -173,7 +173,7 @@ try:
     library.MagickResetIterator.argtypes = [ctypes.c_void_p]
 
     library.MagickIdentifyImage.argtypes = [ctypes.c_void_p]
-    library.MagickIdentifyImage.restype = ctypes.c_char_p
+    library.MagickIdentifyImage.restype = ctypes.c_wchar_p
 
     library.MagickRelinquishMemory.argtypes = [ctypes.c_void_p]
     library.MagickRelinquishMemory.restype = ctypes.c_void_p
@@ -191,7 +191,7 @@ try:
 
     library.PixelGetIteratorException.argtypes = [ctypes.c_void_p,
                                                   ctypes.POINTER(ctypes.c_int)]
-    library.PixelGetIteratorException.restype = ctypes.c_char_p
+    library.PixelGetIteratorException.restype = ctypes.c_wchar_p
 
     library.PixelClearIteratorException.argtypes = [ctypes.c_void_p]
 
@@ -212,7 +212,7 @@ try:
 
     library.PixelGetException.argtypes = [ctypes.c_void_p,
                                           ctypes.POINTER(ctypes.c_int)]
-    library.PixelGetException.restype = ctypes.c_char_p
+    library.PixelGetException.restype = ctypes.c_wchar_p
 
     library.PixelClearException.argtypes = [ctypes.c_void_p]
 
@@ -226,7 +226,7 @@ try:
     library.PixelSetColor.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
 
     library.PixelGetColorAsString.argtypes = [ctypes.c_void_p]
-    library.PixelGetColorAsString.restype = ctypes.c_char_p
+    library.PixelGetColorAsString.restype = ctypes.c_wchar_p
 
     library.PixelGetAlpha.argtypes = [ctypes.c_void_p]
     library.PixelGetAlpha.restype = ctypes.c_double

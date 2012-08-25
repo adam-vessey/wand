@@ -1,9 +1,7 @@
 import os.path
 import tempfile
-try:
-    import cStringIO as StringIO
-except ImportError:
-    import StringIO
+
+import io
 
 from attest import Tests, assert_hook, raises
 
@@ -27,7 +25,7 @@ def new_from_file():
     with raises(ClosedImageError):
         img.wand
     with open(asset('mona-lisa.jpg'), 'rb') as f:
-        strio = StringIO.StringIO(f.read())
+        strio = io.BytesIO(f.read())
     with Image(file=strio) as img:
         assert img.width == 402
     strio.close()
@@ -104,7 +102,7 @@ def save_to_filename():
 @tests.test
 def save_to_file():
     """Saves an image to the Python file object."""
-    buffer = StringIO.StringIO()
+    buffer = io.BytesIO()
     with tempfile.TemporaryFile() as savefile:
         with Image(filename=asset('mona-lisa.jpg')) as orig:
             orig.save(file=savefile)
@@ -125,7 +123,7 @@ def save_to_file():
 @tests.test
 def save_error():
     filename = os.path.join(tempfile.mkdtemp(), 'savetest.jpg')
-    fileobj = StringIO.StringIO()
+    fileobj = io.BytesIO()
     with Image(filename=asset('mona-lisa.jpg')) as orig:
         with raises(TypeError):
             orig.save()
@@ -182,7 +180,7 @@ def set_format():
     with Image(filename=asset('mona-lisa.jpg')) as img:
         img.format = 'png'
         assert img.format == 'PNG'
-        strio = StringIO.StringIO()
+        strio = io.BytesIO()
         img.save(file=strio)
         strio.seek(0)
         with Image(file=strio) as png:
@@ -219,7 +217,7 @@ def set_compression():
     with Image(filename=asset('mona-lisa.jpg')) as img:
         img.compression_quality = 50
         assert img.compression_quality == 50
-        strio = StringIO.StringIO()
+        strio = io.BytesIO()
         img.save(file=strio)
         strio.seek(0)
         with Image(file=strio) as jpg:
@@ -232,7 +230,7 @@ def set_compression():
 def strip():
     """Strips the image of all profiles and comments."""
     with Image(filename=asset('beach.jpg')) as img:
-        strio = StringIO.StringIO()
+        strio = io.BytesIO()
         img.save(file=strio)
         len_unstripped = strio.tell()
         strio.truncate(0)
@@ -247,7 +245,7 @@ def trim():
     """Remove transparent area around image."""
     with Image(filename=asset('trimtest.png')) as img:
         oldx, oldy = img.size
-        print img.trim()
+        print(img.trim())
         newx, newy = img.size
         assert newx < oldx
         assert newy < oldy
@@ -268,7 +266,7 @@ def convert():
     with Image(filename=asset('mona-lisa.jpg')) as img:
         with img.convert('png') as converted:
             assert converted.format == 'PNG'
-            strio = StringIO.StringIO()
+            strio = io.BytesIO()
             converted.save(file=strio)
             strio.seek(0)
             with Image(file=strio) as png:

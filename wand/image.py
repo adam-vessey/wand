@@ -14,7 +14,7 @@ import collections
 import ctypes
 import numbers
 import platform
-import types
+import io
 
 from .api import MagickPixelPacket, libc, libmagick, library
 from .color import Color
@@ -350,7 +350,7 @@ class Image(Resource):
                  for b in args[:i] + args[i + 1:]):
             raise TypeError('parameters are exclusive each other; use only '
                             'one at once')
-        elif not (format is None or isinstance(format, basestring)):
+        elif not (format is None or isinstance(format, str)):
             raise TypeError('format must be a string, not ' + repr(format))
         with self.allocate():
             if image is not None:
@@ -368,12 +368,12 @@ class Image(Resource):
                     if format:
                         library.MagickSetFilename(self.wand,
                                                   'buffer.' + format)
-                    if (isinstance(file, types.FileType) and
+                    if (isinstance(file, io.IOBase) and
                         hasattr(libc, 'fdopen')):
                         fd = libc.fdopen(file.fileno(), file.mode)
                         library.MagickReadImageFile(self.wand, fd)
                         read = True
-                    elif not callable(getattr(file, 'read', None)):
+                    elif not isinstance(getattr(file, 'read', None), collections.Callable):
                         raise TypeError('file must be a readable file object'
                                         ', but the given object does not '
                                         'have read() method')
@@ -387,9 +387,7 @@ class Image(Resource):
                     if not isinstance(blob, collections.Iterable):
                         raise TypeError('blob must be iterable, not ' +
                                         repr(blob))
-                    if not isinstance(blob, basestring):
-                        blob = ''.join(blob)
-                    elif not isinstance(blob, str):
+                    if not isinstance(blob, str):
                         blob = str(blob)
                     library.MagickReadImageBlob(self.wand, blob, len(blob))
                     read = True
@@ -399,6 +397,7 @@ class Image(Resource):
                             'format option cannot be used with image '
                             'nor filename'
                         )
+                    print("Filename:", filename)
                     library.MagickReadImage(self.wand, filename)
                     read = True
                 if not read:
@@ -462,7 +461,7 @@ class Image(Resource):
         return Iterator(image=self)
 
     def __getitem__(self, idx):
-        if (not isinstance(idx, basestring) and
+        if (not isinstance(idx, str) and
             isinstance(idx, collections.Iterable)):
             idx = tuple(idx)
             d = len(idx)
@@ -520,7 +519,7 @@ class Image(Resource):
                                  repr(idx))
             with iter(self) as iterator:
                 iterator.seek(idx)
-                return iterator.next()
+                return next(iterator)
         elif isinstance(idx, slice):
             return self[:, idx]
         raise TypeError('unsupported index type: ' + repr(idx))
@@ -596,7 +595,7 @@ class Image(Resource):
 
     @format.setter
     def format(self, fmt):
-        if not isinstance(fmt, basestring):
+        if not isinstance(fmt, str):
             raise TypeError("format must be a string like 'png' or 'jpeg'"
                             ', not ' + repr(fmt))
         r = library.MagickSetImageFormat(self.wand, fmt.strip().upper())
@@ -621,7 +620,7 @@ class Image(Resource):
     
     @type.setter
     def type(self, image_type):
-        if not isinstance(image_type, basestring) \
+        if not isinstance(image_type, str) \
             or image_type not in IMAGE_TYPES:
             raise TypeError('Type value must be a string from IMAGE_TYPES'
                             ', not ' + repr(image_type))
@@ -929,10 +928,10 @@ class Image(Resource):
                              repr(height))
         elif not isinstance(blur, numbers.Real):
             raise TypeError('blur must be numbers.Real , not ' + repr(blur))
-        elif not isinstance(filter, (basestring, numbers.Integral)):
+        elif not isinstance(filter, (str, numbers.Integral)):
             raise TypeError('filter must be one string defined in wand.image.'
                             'FILTER_TYPES or an integer, not ' + repr(filter))
-        if isinstance(filter, basestring):
+        if isinstance(filter, str):
             try:
                 filter = FILTER_TYPES.index(filter)
             except IndexError:
@@ -1082,13 +1081,13 @@ class Image(Resource):
                 if not r:
                     self.raise_exception()
             else:
-                if not callable(getattr(file, 'write', None)):
+                if not isinstance(getattr(file, 'write', None), collections.Callable):
                     raise TypeError('file must be a writable file object, '
                                     'but it does not have write() method: ' +
                                     repr(file))
                 file.write(self.make_blob())
         else:
-            if not isinstance(filename, basestring):
+            if not isinstance(filename, str):
                 raise TypeError('filename must be a string, not ' +
                                 repr(filename))
             r = library.MagickWriteImage(self.wand, filename)
@@ -1224,7 +1223,7 @@ class Iterator(Resource, collections.Iterator):
         struct_size = ctypes.sizeof(MagickPixelPacket)
         if x is None:
             r_pixels = [None] * width.value
-            for x in xrange(width.value):
+            for x in range(width.value):
                 pc = pixels[x]
                 packet_buffer = ctypes.create_string_buffer(struct_size)
                 get_color(pc, packet_buffer)

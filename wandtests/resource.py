@@ -57,7 +57,7 @@ def raises_exceptions():
             exc_cls = exceptions.TYPE_MAP[self.exception_index]
             return exc_cls("Dummy exception")
 
-    for code in exceptions.TYPE_MAP.keys():
+    for code in list(exceptions.TYPE_MAP.keys()):
         resource = DummyResource()
         resource.set_exception_type(code)
         import warnings
@@ -69,4 +69,4 @@ def raises_exceptions():
                 assert "Dummy exception" in str(w[-1].message)
             except exceptions.WandException as e:
                 assert not e.__class__.__name__.endswith('Warning')
-                assert e.message == 'Dummy exception'
+                assert str(e) == 'Dummy exception'

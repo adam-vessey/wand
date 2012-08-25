@@ -19,14 +19,14 @@ tests.register(image.tests)
 @tests.test
 def version():
     """Test version strings."""
-    match = re.match('^ImageMagick\s+\d+\.\d+\.\d+(?:-\d+)?', MAGICK_VERSION)
+    match = re.match(b'^ImageMagick\s+\d+\.\d+\.\d+(?:-\d+)?', MAGICK_VERSION)
     assert match
     assert isinstance(MAGICK_VERSION_INFO, tuple)
     assert (len(MAGICK_VERSION_INFO) ==
-            match.group(0).count('.') + match.group(0).count('-') + 1)
+            match.group(0).count(b'.') + match.group(0).count(b'-') + 1)
     assert all(isinstance(v, int) for v in MAGICK_VERSION_INFO)
     assert isinstance(MAGICK_VERSION_NUMBER, numbers.Integral)
     assert isinstance(MAGICK_RELEASE_DATE, datetime.date)
     assert (MAGICK_RELEASE_DATE_STRING ==
-            MAGICK_RELEASE_DATE.strftime('%Y-%m-%d'))
+            MAGICK_RELEASE_DATE.strftime('%Y-%m-%d').encode())
 
